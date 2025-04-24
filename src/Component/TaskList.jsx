@@ -1,9 +1,10 @@
 import React from 'react'
 import TaskItem from "./TaskItem";
+import styles from './TaskList.module.css'
 
 const TaskList = ({ tasks, setTasks }) => {
   const editTask = (id, newText) => {
-    const taskToUpdate = tasks.find(task => task.id === id);
+   
     
     fetch(`http://localhost:4005/tasks/${id}`, {
       method: 'PATCH',
@@ -57,9 +58,9 @@ const TaskList = ({ tasks, setTasks }) => {
   };
 
   return (
-    <div style={{ margin: '20px 0' }}>
+    <div className={styles.container} >
       {tasks.length > 0 ? (
-        <ul style={{ listStyle: 'none', padding: 0 }}>
+        <ul className={styles.taskList} >
           {tasks.map(task => (
             <TaskItem
               key={`task-${task.id}`}
@@ -71,12 +72,7 @@ const TaskList = ({ tasks, setTasks }) => {
           ))}
         </ul>
       ) : (
-        <p style={{ 
-          textAlign: 'center',
-          color: '#666',
-          fontStyle: 'italic',
-          marginTop: '20px'
-        }}>
+        <p className={styles.emptyText}>
           No tasks found. Add a new task above!
         </p>
       )}
