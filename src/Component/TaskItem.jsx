@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import styles from './TaskItem.module.css';
 
 const TaskItem = ({ task, onDelete, onToggle, onEdit }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -11,12 +12,22 @@ const TaskItem = ({ task, onDelete, onToggle, onEdit }) => {
     setIsEditing(false);
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handleEdit();
+    } else if (e.key === 'Escape') {
+      setEditedText(task.text);
+      setIsEditing(false);
+    }
+  };
+
   return (
-    <li style={{ textDecoration: task.completed ? 'line-through' : 'none' }}>
+    <li className={`${styles.taskItem} ${task.completed ? styles.completed : ''}`}>
       <input 
         type="checkbox" 
         checked={task.completed} 
-        onChange={() => onToggle(task.id)} 
+        onChange={() => onToggle(task.id)}
+        className={styles.checkbox}
       />
       
       {isEditing ? (
@@ -25,18 +36,33 @@ const TaskItem = ({ task, onDelete, onToggle, onEdit }) => {
           value={editedText}
           onChange={(e) => setEditedText(e.target.value)}
           onBlur={handleEdit}
+          onKeyDown={handleKeyDown}
           autoFocus
+          className={styles.editInput}
         />
       ) : (
-        <span onDoubleClick={() => setIsEditing(true)}>
+        <span 
+          onDoubleClick={() => setIsEditing(true)}
+          className={styles.taskText}
+        >
           {task.text}
         </span>
       )}
       
-      <button onClick={() => onDelete(task.id)}>Delete</button>
-      <button onClick={() => setIsEditing(!isEditing)}>
-        {isEditing ? 'Save' : 'Edit'}
-      </button>
+      <div className={styles.buttonGroup}>
+        <button 
+          onClick={() => setIsEditing(!isEditing)}
+          className={isEditing ? styles.saveButton : styles.editButton}
+        >
+          {isEditing ? 'Save' : 'Edit'}
+        </button>
+        <button 
+          onClick={() => onDelete(task.id)}
+          className={styles.deleteButton}
+        >
+          Delete
+        </button>
+      </div>
     </li>
   );
 };

@@ -3,28 +3,39 @@ import { useState } from 'react';
 const AddTask = ({ setTasks }) => {
   const [taskText, setTaskText] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!taskText.trim()) return;
 
     const newTask = {
-      text: taskText,
-      completed: false
+        id: Date.now(),
+        text: taskText,
+        completed: false
     };
 
-    // POST to JSON Server
-    fetch('http://localhost:4005/tasks', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(newTask)
-    })
-      .then(res => res.json())
-      .then(data => {
-        setTasks(prev => [...prev, data]);
-        setTaskText('');
+    try {
+      const response = await fetch('http://localhost:4005/tasks', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(newTask)
       });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const data = await response.json();
+      setTasks(prev => [...prev, data]);
+      setTaskText('');
+    } catch (error) {
+      console.error('Error adding task:', error);
+      alert(`Failed to add task: ${error.message}\n\nMake sure:
+1. JSON Server is running (port 4005)
+2. No CORS issues
+3. Network connection is active`);
+    }
   };
 
   return (
